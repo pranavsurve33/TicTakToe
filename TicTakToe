@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: violet; /* Violet background */
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        background-color: #fff; /* White container background */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    }
+
+    .board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        grid-gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: #ddd; /* Light gray cell background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 36px;
+        cursor: pointer;
+    }
+
+    .cell:hover {
+        background-color: #ccc; /* Darker gray cell background on hover */
+    }
+
+    .win-message {
+        font-size: 24px;
+        font-weight: bold;
+        color: green; /* Green color for win message */
+        margin-bottom: 10px;
+    }
+
+    #reset {
+        background-color: #ff4500; /* Red color for reset button */
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #reset:hover {
+        background-color: #cc3700; /* Darker red color on hover */
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div class="win-message" id="winMessage"></div>
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <button id="reset">Reset Game</button>
+</div>
+
+<script>
+    const board = document.getElementById('board');
+    const cells = document.querySelectorAll('.cell');
+    const resetButton = document.getElementById('reset');
+    const winMessage = document.getElementById('winMessage');
+
+    let currentPlayer = 'X';
+    let gameActive = true;
+    let winner = null;
+
+    const winningCombos = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ];
+
+    function handleCellClick(e) {
+        const cell = e.target;
+        const index = parseInt(cell.getAttribute('data-index'));
+
+        if (cell.innerText !== '' || !gameActive) return;
+
+        cell.innerText = currentPlayer;
+        checkGameStatus();
+        togglePlayer();
+    }
+
+    function checkGameStatus() {
+        checkWinner();
+        checkDraw();
+    }
+
+    function checkWinner() {
+        for (let combo of winningCombos) {
+            const [a, b, c] = combo;
+            if (cells[a].innerText && cells[a].innerText === cells[b].innerText && cells[a].innerText === cells[c].innerText) {
+                gameActive = false;
+                winner = cells[a].innerText;
+                cells[a].classList.add('win');
+                cells[b].classList.add('win');
+                cells[c].classList.add('win');
+                winMessage.innerText = `${winner} wins!`;
+            }
+        }
+    }
+
+    function checkDraw() {
+        if (Array.from(cells).every(cell => cell.innerText !== '') && winner === null) {
+            gameActive = false;
+            winMessage.innerText = "It's a draw!";
+        }
+    }
+
+    function togglePlayer() {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+
+    function resetGame() {
+        currentPlayer = 'X';
+        gameActive = true;
+        winner = null;
+        winMessage.innerText = '';
+        cells.forEach(cell => {
+            cell.innerText = '';
+            cell.classList.remove('win');
+        });
+    }
+
+    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    resetButton.addEventListener('click', resetGame);
+</script>
+</body>
+</html>
